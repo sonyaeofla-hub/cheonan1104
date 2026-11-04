@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>두더지 잡기!</title>
+<style>
+  :root{--ink:#27352e;--green:#4e8b62;--mint:#e8f4e9;--cream:#fff9ed;--pink:#ff8d9b;--gold:#ffc857}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 10%,#fff 0 8%,transparent 30%),linear-gradient(135deg,#e9f5e7,#fdf2df);display:grid;place-items:center;padding:20px}
+  .game{width:min(100%,720px);background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:28px;padding:clamp(18px,4vw,34px);box-shadow:0 20px 60px #36583b20}
+  header{text-align:center;margin-bottom:22px}
+  .eyebrow{font-size:.78rem;letter-spacing:.16em;font-weight:800;color:var(--green)}
+  h1{font-size:clamp(2rem,6vw,3.2rem);margin:5px 0;color:#315d40}
+  .sub{margin:0;color:#718075}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+  .stat{background:var(--cream);border:1px solid #f2ead8;border-radius:16px;padding:12px 8px;text-align:center}
+  .stat span{display:block;font-size:.76rem;color:#788276;font-weight:700}
+  .stat strong{font-size:clamp(1.35rem,4vw,1.8rem);font-variant-numeric:tabular-nums}
+  .bar{height:9px;background:#e8eee5;border-radius:20px;overflow:hidden;margin:-8px 0 20px}
+  .bar>div{height:100%;width:100%;background:linear-gradient(90deg,#78b77d,#f5c45b);transition:width .15s linear}
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(9px,2.6vw,18px);padding:clamp(10px,3vw,20px);background:linear-gradient(#a9d28e,#78b66d);border:8px solid #609b58;border-radius:24px;box-shadow:inset 0 5px 0 #ffffff50,0 9px 0 #477d48}
+  .hole{position:relative;aspect-ratio:1.18;border:0;background:radial-gradient(ellipse at 50% 65%,#553a2b 0 35%,#76523a 36% 48%,transparent 50%);border-radius:50%;cursor:pointer;overflow:hidden;touch-action:manipulation;outline-offset:3px}
+  .hole:focus-visible{outline:3px solid white}
+  .mole{position:absolute;left:50%;bottom:-8%;transform:translate(-50%,100%) scale(.75);width:72%;height:90%;border-radius:48% 48% 35% 35%;background:linear-gradient(145deg,#c58a5c,#8b5738);box-shadow:inset -8px -5px 0 #70442f55;transition:transform .13s cubic-bezier(.2,.8,.3,1);pointer-events:none}
+  .hole.up .mole{transform:translate(-50%,0) scale(1)}
+  .ears{position:absolute;top:-8%;left:8%;width:26%;height:27%;border-radius:50%;background:#a96d49;border:5px solid #8b5738}
+  .ears.right{left:auto;right:8%}
+  .face{position:absolute;top:36%;left:0;width:100%;text-align:center;font-size:clamp(17px,4vw,28px);letter-spacing:2px}
+  .nose{position:absolute;top:55%;left:50%;transform:translateX(-50%);font-size:18px}
+  .instructions{text-align:center;color:#758277;font-size:.9rem;margin:19px 0 14px}
+  .actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+  button.action{border:0;border-radius:999px;padding:13px 24px;font:inherit;font-weight:800;cursor:pointer;transition:transform .15s,filter .15s}
+  button.action:hover{filter:brightness(1.04);transform:translateY(-2px)}
+  button.action:active{transform:scale(.97)}
+  .start{background:#3f8052;color:white;box-shadow:0 4px 0 #2d603d}
+  .reset{background:#f3ead8;color:#685943}
+  button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+  .message{min-height:28px;text-align:center;font-weight:800;color:#4c8056;margin-top:16px}
+  .footer{text-align:center;font-size:.75rem;color:#9aa59a;margin-top:10px}
+  @media(max-width:420px){body{padding:10px}.game{padding:16px;border-radius:22px}.stats{gap:6px}.stat{padding:9px 4px}.board{border-width:6px}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="game">
+  <header>
+    <div class="eyebrow">GARDEN ARCADE</div>
+    <h1>🐹 두더지 잡기!</h1>
+    <p class="sub">쏙쏙 나타나는 두더지를 빠르게 눌러보세요.</p>
+  </header>
+  <section class="stats" aria-label="게임 정보">
+    <div class="stat"><span>점수</span><strong id="score">0</strong></div>
+    <div class="stat"><span>남은 시간</span><strong id="time">30</strong></div>
+    <div class="stat"><span>최고 점수</span><strong id="best">0</strong></div>
+  </section>
+  <div class="bar" aria-hidden="true"><div id="timerBar"></div></div>
+  <section class="board" id="board" aria-label="두더지 게임판">
+    <button class="hole" aria-label="첫 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="두 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="세 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="네 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="다섯 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="여섯 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="일곱 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="여덟 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+    <button class="hole" aria-label="아홉 번째 구멍"><span class="mole"><i class="ears"></i><i class="ears right"></i><span class="face">•　•</span><span class="nose">♡</span></span></button>
+  </section>
+  <p class="instructions">두더지가 올라오면 톡! 눌러주세요 · 한 마리당 +10점</p>
+  <div class="actions">
+    <button class="action start" id="startBtn">게임 시작</button>
+    <button class="action reset" id="resetBtn">점수 초기화</button>
+  </div>
+  <div class="message" id="message" role="status" aria-live="polite">준비됐나요? 게임 시작을 눌러주세요!</div>
+  <div class="footer">30초 동안 최고 점수에 도전해 보세요 ✨</div>
+</main>
+<script>
+(() => {
+  const holes = [...document.querySelectorAll('.hole')];
+  const scoreEl = document.getElementById('score');
+  const timeEl = document.getElementById('time');
+  const bestEl = document.getElementById('best');
+  const bar = document.getElementById('timerBar');
+  const message = document.getElementById('message');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  let score = 0, time = 30, active = -1, playing = false;
+  let moleTimer = null, clockTimer = null, hideTimer = null;
+  let best = Number(localStorage.getItem('moleBest') || 0);
+  bestEl.textContent = best;
+
+  function clearTimers() {
+    clearInterval(moleTimer); clearInterval(clockTimer); clearTimeout(hideTimer);
+    moleTimer = clockTimer = hideTimer = null;
+  }
+  function hideMole() {
+    holes.forEach(h => h.classList.remove('up'));
+    active = -1;
+  }
+  function showMole() {
+    if (!playing) return;
+    hideMole();
+    let next;
+    do { next = Math.floor(Math.random() * holes.length); } while (next === active);
+    active = next;
+    holes[active].classList.add('up');
+    const duration = Math.max(520, 1050 - score * 3);
+    hideTimer = setTimeout(() => { hideMole(); }, duration);
+  }
+  function endGame() {
+    playing = false; clearTimers(); hideMole();
+    time = 0; timeEl.textContent = '0'; bar.style.width = '0%';
+    message.textContent = `게임 종료! 최종 점수는 ${score}점이에요.`;
+    startBtn.disabled = false; startBtn.textContent = '다시 하기';
+  }
+  function startGame() {
+    clearTimers(); hideMole();
+    score = 0; time = 30; playing = true;
+    scoreEl.textContent = score; timeEl.textContent = time; bar.style.width = '100%';
+    message.textContent = '좋아요! 두더지를 잡아보세요!';
+    startBtn.disabled = true; startBtn.textContent = '게임 진행 중';
+    showMole();
+    moleTimer = setInterval(showMole, 850);
+    clockTimer = setInterval(() => {
+      time--; timeEl.textContent = time; bar.style.width = `${time / 30 * 100}%`;
+      if (time <= 0) endGame();
+    }, 1000);
+  }
+  holes.forEach((hole, index) => {
+    hole.addEventListener('click', () => {
+      if (!playing || index !== active) return;
+      score += 10; scoreEl.textContent = score;
+      hole.classList.remove('up'); active = -1; clearTimeout(hideTimer);
+      message.textContent = '정확해요! +10점 🎉';
+      showMole();
+    });
+  });
+  startBtn.addEventListener('click', startGame);
+  resetBtn.addEventListener('click', () => {
+    clearTimers(); playing = false; hideMole();
+    score = 0; time = 30;
+    scoreEl.textContent = '0'; timeEl.textContent = '30'; bar.style.width = '100%';
+    best = 0; localStorage.removeItem('moleBest'); bestEl.textContent = '0';
+    message.textContent = '점수를 초기화했어요. 다시 도전해 보세요!';
+    startBtn.disabled = false; startBtn.textContent = '게임 시작';
+  });
+  // 최고 점수는 게임 종료 시 저장
+  const originalEnd = endGame;
+  // Keep the best score current as soon as a new record is reached.
+  const observer = new MutationObserver(() => {
+    if (score > best) {
+      best = score; bestEl.textContent = best;
+      localStorage.setItem('moleBest', String(best));
+    }
+  });
+  observer.observe(scoreEl, {childList:true, characterData:true, subtree:true});
+})();
+</script>
+</body>
+</html>
