@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <title>Portfolio | 개인 포트폴리오</title>
+  <style>
+    :root {
+      --bg: #f5f7fb; --ink: #172033; --muted: #697386; --line: #e4e8f0;
+      --navy: #101827; --blue: #5575f7; --mint: #9be4d0; --white: #fff;
+      --shadow: 0 18px 55px rgba(24, 39, 75, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .topbar { position: sticky; top: 0; z-index: 20; background: rgba(245,247,251,.88); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(228,232,240,.8); }
+    .nav { max-width: 1120px; margin: auto; padding: 17px 28px; display: flex; align-items: center; justify-content: space-between; }
+    .brand { font-size: 18px; font-weight: 850; letter-spacing: -.7px; }
+    .brand span { color: var(--blue); }
+    .navlinks { display: flex; gap: 28px; color: #596477; font-size: 13px; font-weight: 650; }
+    .navlinks a:hover { color: var(--blue); }
+    .menu-btn { display: none; border: 0; background: transparent; font-size: 24px; cursor: pointer; }
+    .wrap { max-width: 1120px; margin: auto; padding: 0 28px; }
+    .hero { padding: 88px 0 72px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 54px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; color: #5369d9; font-size: 12px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+    .eyebrow:before { content: ""; width: 24px; height: 2px; background: var(--blue); }
+    h1 { margin: 20px 0 18px; font-size: clamp(42px, 6vw, 70px); line-height: 1.13; letter-spacing: -3.6px; font-weight: 850; }
+    h1 em { color: var(--blue); font-style: normal; }
+    .hero-copy { max-width: 570px; color: var(--muted); font-size: 16px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 10px; padding: 13px 19px; border: 1px solid var(--line); font-weight: 750; font-size: 13px; transition: transform .2s, box-shadow .2s, background .2s; cursor: pointer; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(30,50,100,.12); }
+    .btn-primary { color: white; background: var(--navy); border-color: var(--navy); }
+    .btn-light { background: white; }
+    .profile-card { min-height: 365px; padding: 30px; border-radius: 22px; color: white; background: radial-gradient(circle at 85% 12%, rgba(155,228,208,.35), transparent 28%), linear-gradient(145deg, #1a2942, #101827 72%); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .profile-card:after { content: "PROFILE"; position: absolute; right: -12px; bottom: -30px; font-size: 82px; font-weight: 900; letter-spacing: -5px; color: rgba(255,255,255,.045); }
+    .avatar { width: 74px; height: 74px; border-radius: 20px; display: grid; place-items: center; background: rgba(155,228,208,.16); border: 1px solid rgba(155,228,208,.4); color: var(--mint); font-size: 27px; font-weight: 850; }
+    .profile-card h2 { margin: 25px 0 3px; font-size: 27px; letter-spacing: -.8px; }
+    .profile-card .role { color: #b7c4d8; font-size: 13px; }
+    .profile-meta { margin-top: 27px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.15); display: grid; gap: 12px; font-size: 12px; color: #d5deeb; }
+    .profile-meta b { display: inline-block; width: 72px; color: #91a2bd; font-weight: 600; }
+    section { padding: 55px 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 25px; }
+    .kicker { color: var(--blue); font-size: 11px; font-weight: 850; letter-spacing: 1.7px; }
+    h2.section-title { margin: 6px 0 0; font-size: 30px; letter-spacing: -1.2px; }
+    .section-note { color: var(--muted); font-size: 13px; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .panel { background: white; border: 1px solid var(--line); border-radius: 17px; padding: 25px; box-shadow: 0 8px 28px rgba(24,39,75,.035); }
+    .panel h3 { margin: 0 0 10px; font-size: 16px; }
+    .panel p { margin: 0; color: var(--muted); font-size: 13px; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+    .tag { padding: 6px 10px; border-radius: 7px; background: #f0f3ff; color: #5268d5; font-size: 11px; font-weight: 750; }
+    .career-list { display: grid; gap: 12px; }
+    .career { display: grid; grid-template-columns: 130px 1fr; gap: 20px; padding: 21px 24px; border: 1px solid var(--line); background: white; border-radius: 14px; }
+    .career .period { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .career h3 { margin: 0 0 4px; font-size: 15px; }
+    .career p { margin: 0; color: var(--muted); font-size: 12px; }
+    .pages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .page-link { min-height: 155px; padding: 22px; border-radius: 16px; background: white; border: 1px solid var(--line); transition: .2s; display: flex; flex-direction: column; justify-content: space-between; }
+    .page-link:hover { border-color: #aab8ff; transform: translateY(-4px); box-shadow: var(--shadow); }
+    .page-num { font-size: 12px; font-weight: 850; color: var(--blue); letter-spacing: 1px; }
+    .page-link h3 { margin: 8px 0 2px; font-size: 17px; }
+    .page-link p { margin: 0; color: var(--muted); font-size: 12px; }
+    .arrow { align-self: flex-end; font-size: 20px; color: var(--blue); }
+    .contact { padding: 38px; border-radius: 20px; background: var(--navy); color: white; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
+    .contact h2 { margin: 0 0 5px; font-size: 25px; letter-spacing: -.8px; }
+    .contact p { margin: 0; color: #aebbd0; font-size: 13px; }
+    .contact .btn { background: var(--mint); color: #142238; border-color: var(--mint); white-space: nowrap; }
+    footer { padding: 30px 0 38px; color: #929bad; font-size: 11px; text-align: center; }
+    .edit-hint { display: inline-block; margin-top: 13px; color: #9ba5b6; font-size: 10px; }
+    @media (max-width: 760px) {
+      .nav { padding: 14px 20px; } .menu-btn { display: block; }
+      .navlinks { display: none; position: absolute; top: 58px; left: 0; right: 0; padding: 18px 22px; background: white; border-bottom: 1px solid var(--line); flex-direction: column; gap: 15px; }
+      .navlinks.open { display: flex; }
+      .wrap { padding: 0 20px; }
+      .hero { padding: 58px 0 45px; grid-template-columns: 1fr; gap: 32px; }
+      h1 { letter-spacing: -2.3px; }
+      .profile-card { min-height: 320px; }
+      section { padding: 38px 0; }
+      .about-grid, .pages { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; gap: 5px; }
+      .career { grid-template-columns: 1fr; gap: 5px; }
+      .contact { padding: 27px; align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="주요 메뉴">
+      <a class="brand" href="index.html">MY<span>.</span>PORTFOLIO</a>
+      <button class="menu-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false">☰</button>
+      <div class="navlinks" id="navLinks">
+        <a href="#about">ABOUT</a><a href="#career">CAREER</a><a href="#pages">PROJECT</a><a href="#contact">CONTACT</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero" id="home">
+        <div>
+          <div class="eyebrow">PERSONAL PORTFOLIO</div>
+          <h1>안녕하세요<br><em>가치를 더하는</em> 사람</h1>
+          <p class="hero-copy">안녕하세요. 교육 현장에서 배우고 경험을 쌓아가고 있는 프리랜서 보조강사입니다. 맡은 역할에 책임감을 가지고, 새로운 환경과 업무에 유연하게 적응하며 꾸준히 성장하고 있습니다.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#about">프로필 보기 <span>↗</span></a>
+            <a class="btn btn-light" href="#career">경력 살펴보기</a>
+          </div>
+        </div>
+        <aside class="profile-card">
+          <div class="avatar">ME</div>
+          <h2>이름을 입력하세요</h2>
+          <div class="role">Freelance Assistant Instructor</div>
+          <div class="profile-meta">
+            <div><b>소속</b> 프리랜서 · 기관명 입력</div>
+            <div><b>분야</b> 교육 및 직업훈련 · 세부 분야 입력</div>
+            <div><b>관심 방향</b> 새로운 배움과 전문성 확장</div>
+          </div>
+          <span class="edit-hint">이름·소속·분야를 실제 정보로 수정해 주세요.</span>
+        </aside>
+      </section>
+
+      <section id="about">
+        <div class="section-head">
+          <div><div class="kicker">01 / ABOUT ME</div><h2 class="section-title">저를 소개합니다</h2></div>
+          <div class="section-note">경험을 바탕으로 신뢰를 만드는 사람</div>
+        </div>
+        <div class="about-grid">
+          <article class="panel">
+            <h3>자기소개</h3>
+            <p>현재 프리랜서 보조강사로 활동하며 교육 현장의 흐름을 익히고 있습니다. 학습자가 수업에 집중하고 과정을 원활하게 따라갈 수 있도록 지원하는 역할에 관심이 있으며, 실무 역량을 넓혀 안정적으로 성장하는 것을 목표로 하고 있습니다.</p>
+          </article>
+          <article class="panel">
+            <h3>업무 가치관</h3>
+            <p>작은 업무라도 정확하고 책임감 있게 수행하는 것을 중요하게 생각합니다. 원활한 소통과 꼼꼼한 확인을 바탕으로 함께 일하는 사람들에게 신뢰를 주는 구성원이 되고자 합니다.</p>
+            <div class="tag-row"><span class="tag">책임감</span><span class="tag">소통</span><span class="tag">꼼꼼함</span><span class="tag">지속적인 학습</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="career">
+        <div class="section-head">
+          <div><div class="kicker">02 / EXPERIENCE</div><h2 class="section-title">주요 경력 및 담당 업무</h2></div>
+          <div class="section-note">실제 이력에 맞게 항목을 추가·수정하세요.</div>
+        </div>
+        <div class="career-list">
+          <article class="career">
+            <div class="period">기간 입력</div>
+            <div><h3>프리랜서 보조강사</h3><p>소속 기관 및 교육 과정명 입력 · 수업 운영 보조, 학습자 지원 등 실제 담당 업무를 구체적으로 작성하세요.</p></div>
+          </article>
+          <article class="career">
+            <div class="period">기간 입력</div>
+            <div><h3>추가 경력 / 프로젝트</h3><p>근무처, 역할, 주요 성과 또는 담당 업무를 입력하세요. 확인되지 않은 경력은 기재하지 않습니다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="pages">
+        <div class="section-head">
+          <div><div class="kicker">03 / DETAILS</div><h2 class="section-title">더 자세한 이야기</h2></div>
+          <div class="section-note">각 페이지를 별도 HTML 파일로 확장할 수 있습니다.</div>
+        </div>
+        <div class="pages">
+          <a class="page-link" href="1.html"><div><div class="page-num">PAGE 01</div><h3>업무 역량</h3><p>담당 업무와 보유 역량 소개</p></div><span class="arrow">↗</span></a>
+          <a class="page-link" href="2.html"><div><div class="page-num">PAGE 02</div><h3>경력 및 활동</h3><p>주요 경력과 프로젝트 정리</p></div><span class="arrow">↗</span></a>
+          <a class="page-link" href="3.html"><div><div class="page-num">PAGE 03</div><h3>목표와 성장</h3><p>앞으로의 목표와 성장 방향</p></div><span class="arrow">↗</span></a>
+        </div>
+      </section>
+
+      <section id="contact">
+        <div class="contact">
+          <div><h2>함께 성장할 기회를 기다립니다.</h2><p>연락처와 이메일 주소를 입력해 주세요.</p></div>
+          <a class="btn" href="mailto:your-email@example.com">이메일 보내기 ↗</a>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer>© 2026 MY PORTFOLIO · Designed with clarity and purpose</footer>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const navLinks = document.getElementById('navLinks');
+    menuBtn.addEventListener('click', () => {
+      const opened = navLinks.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', String(opened));
+      menuBtn.textContent = opened ? '×' : '☰';
+    });
+    navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      menuBtn.textContent = '☰';
+    }));
+  </script>
+</body>
+</html>
